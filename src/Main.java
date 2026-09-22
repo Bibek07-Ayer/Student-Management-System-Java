@@ -1,12 +1,15 @@
 import dao.StudentDAO;
 import dao.StudentDAOImpl;
 import model.Student;
+import service.StudentService;
 
 public class Main {
 
     public static void main(String[] args) {
 
         StudentDAO studentDAO = new StudentDAOImpl();
+
+        StudentService studentService = new StudentService(studentDAO);
 
         Student student1 = new Student(
                 1,
@@ -16,13 +19,13 @@ public class Main {
                 "Kathmandu"
         );
 
-        studentDAO.addStudent(student1);
+        studentService.addStudent(student1);
 
         System.out.println("Student added successfully!");
 
         System.out.println("\nAll Students:");
 
-        for (Student student : studentDAO.getAllStudents()) {
+        for (Student student : studentService.getAllStudents()) {
             student.displayInfo();
         }
     }
