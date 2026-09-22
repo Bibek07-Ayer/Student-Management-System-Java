@@ -1,6 +1,7 @@
 package service;
 
 import dao.StudentDAO;
+import exception.StudentNotFoundException;
 import model.Student;
 
 import java.util.List;
@@ -21,8 +22,17 @@ public class StudentService {
         return studentDAO.getAllStudents();
     }
 
-    public Student getStudentById(int id) {
-        return studentDAO.getStudentById(id);
+    public Student getStudentById(int id) throws StudentNotFoundException {
+
+        Student student = studentDAO.getStudentById(id);
+
+        if (student == null) {
+            throw new StudentNotFoundException(
+                    "Student with ID " + id + " was not found."
+            );
+        }
+
+        return student;
     }
 
     public void updateStudent(Student student) {
