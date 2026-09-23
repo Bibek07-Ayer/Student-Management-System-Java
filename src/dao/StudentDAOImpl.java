@@ -33,22 +33,54 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
+    public List<Student> getStudentsByName(String name) {
+
+        List<Student> result = new ArrayList<>();
+
+        for (Student student : students) {
+
+            if (student.getName()
+                    .toLowerCase()
+                    .contains(name.toLowerCase())) {
+
+                result.add(student);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public void updateStudent(Student student) {
 
-        Student existingStudent = getStudentById(student.getId());
+        Student existingStudent =
+                getStudentById(student.getId());
 
         if (existingStudent != null) {
-            existingStudent.setName(student.getName());
-            existingStudent.setEmail(student.getEmail());
-            existingStudent.setPhone(student.getPhone());
-            existingStudent.setAddress(student.getAddress());
+
+            existingStudent.setName(
+                    student.getName()
+            );
+
+            existingStudent.setEmail(
+                    student.getEmail()
+            );
+
+            existingStudent.setPhone(
+                    student.getPhone()
+            );
+
+            existingStudent.setAddress(
+                    student.getAddress()
+            );
         }
     }
 
     @Override
     public void deleteStudent(int id) {
 
-        Student student = getStudentById(id);
+        Student student =
+                getStudentById(id);
 
         if (student != null) {
             students.remove(student);

@@ -12,6 +12,8 @@ public interface StudentDAO {
 
     Student getStudentById(int id);
 
+    List<Student> getStudentsByName(String name);
+
     void updateStudent(Student student);
 
     void deleteStudent(int id);

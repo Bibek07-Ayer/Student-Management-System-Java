@@ -22,17 +22,24 @@ public class StudentService {
         return studentDAO.getAllStudents();
     }
 
-    public Student getStudentById(int id) throws StudentNotFoundException {
+    public Student getStudentById(int id)
+            throws StudentNotFoundException {
 
-        Student student = studentDAO.getStudentById(id);
+        Student student =
+                studentDAO.getStudentById(id);
 
         if (student == null) {
+
             throw new StudentNotFoundException(
                     "Student with ID " + id + " was not found."
             );
         }
 
         return student;
+    }
+
+    public List<Student> getStudentsByName(String name) {
+        return studentDAO.getStudentsByName(name);
     }
 
     public void updateStudent(Student student) {

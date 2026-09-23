@@ -2,6 +2,8 @@ import dao.CourseDAO;
 import dao.CourseDAOImpl;
 import dao.EnrollmentDAO;
 import dao.EnrollmentDAOImpl;
+import dao.GradeDAO;
+import dao.GradeDAOImpl;
 import dao.StudentDAO;
 import dao.StudentDAOImpl;
 
@@ -10,12 +12,16 @@ import exception.StudentNotFoundException;
 
 import model.Course;
 import model.Enrollment;
+import model.Grade;
 import model.Student;
 
 import service.CourseService;
 import service.EnrollmentService;
+import service.GradeService;
+import service.ReportService;
 import service.StudentService;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -24,22 +30,28 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        // Student
         StudentDAO studentDAO = new StudentDAOImpl();
         StudentService studentService =
                 new StudentService(studentDAO);
 
-        // Course
         CourseDAO courseDAO = new CourseDAOImpl();
         CourseService courseService =
                 new CourseService(courseDAO);
 
-        // Enrollment
         EnrollmentDAO enrollmentDAO =
                 new EnrollmentDAOImpl();
 
         EnrollmentService enrollmentService =
                 new EnrollmentService(enrollmentDAO);
+
+        GradeDAO gradeDAO =
+                new GradeDAOImpl();
+
+        GradeService gradeService =
+                new GradeService(gradeDAO);
+
+        ReportService reportService =
+                new ReportService();
 
         while (true) {
 
@@ -49,20 +61,29 @@ public class Main {
 
             System.out.println("1. Add Student");
             System.out.println("2. View All Students");
-            System.out.println("3. Search Student");
-            System.out.println("4. Update Student");
-            System.out.println("5. Delete Student");
+            System.out.println("3. Search Student by ID");
+            System.out.println("4. Search Student by Name");
+            System.out.println("5. Update Student");
+            System.out.println("6. Delete Student");
 
-            System.out.println("6. Add Course");
-            System.out.println("7. View All Courses");
-            System.out.println("8. Update Course");
-            System.out.println("9. Delete Course");
+            System.out.println("7. Add Course");
+            System.out.println("8. View All Courses");
+            System.out.println("9. Update Course");
+            System.out.println("10. Delete Course");
 
-            System.out.println("10. Enroll Student");
-            System.out.println("11. View Enrollments");
-            System.out.println("12. Unenroll Student");
+            System.out.println("11. Enroll Student");
+            System.out.println("12. View Enrollments");
+            System.out.println("13. Unenroll Student");
+            System.out.println("14. List Students by Course");
 
-            System.out.println("13. Exit");
+            System.out.println("15. Add/Record Marks");
+            System.out.println("16. View Student Grades");
+            System.out.println("17. Update Marks");
+            System.out.println("18. View Student Average");
+
+            System.out.println("19. View Student Report");
+
+            System.out.println("20. Exit");
 
             System.out.print("Enter your choice: ");
 
@@ -70,8 +91,6 @@ public class Main {
             scanner.nextLine();
 
             switch (choice) {
-
-                // ================= STUDENT =================
 
                 case 1:
                     addStudent(
@@ -92,49 +111,52 @@ public class Main {
                     break;
 
                 case 4:
-                    updateStudent(
+                    searchStudentByName(
                             scanner,
                             studentService
                     );
                     break;
 
                 case 5:
+                    updateStudent(
+                            scanner,
+                            studentService
+                    );
+                    break;
+
+                case 6:
                     deleteStudent(
                             scanner,
                             studentService
                     );
                     break;
 
-                // ================= COURSE =================
-
-                case 6:
+                case 7:
                     addCourse(
                             scanner,
                             courseService
                     );
                     break;
 
-                case 7:
+                case 8:
                     viewCourses(courseService);
                     break;
 
-                case 8:
+                case 9:
                     updateCourse(
                             scanner,
                             courseService
                     );
                     break;
 
-                case 9:
+                case 10:
                     deleteCourse(
                             scanner,
                             courseService
                     );
                     break;
 
-                // ================= ENROLLMENT =================
-
-                case 10:
+                case 11:
                     enrollStudent(
                             scanner,
                             enrollmentService,
@@ -143,22 +165,67 @@ public class Main {
                     );
                     break;
 
-                case 11:
+                case 12:
                     viewEnrollments(
                             enrollmentService
                     );
                     break;
 
-                case 12:
+                case 13:
                     unenrollStudent(
                             scanner,
                             enrollmentService
                     );
                     break;
 
-                // ================= EXIT =================
+                case 14:
+                    listStudentsByCourse(
+                            scanner,
+                            enrollmentService,
+                            studentService
+                    );
+                    break;
 
-                case 13:
+                case 15:
+                    addGrade(
+                            scanner,
+                            gradeService,
+                            studentService,
+                            courseService
+                    );
+                    break;
+
+                case 16:
+                    viewStudentGrades(
+                            scanner,
+                            gradeService
+                    );
+                    break;
+
+                case 17:
+                    updateGrade(
+                            scanner,
+                            gradeService
+                    );
+                    break;
+
+                case 18:
+                    viewStudentAverage(
+                            scanner,
+                            gradeService
+                    );
+                    break;
+
+                case 19:
+                    viewStudentReport(
+                            scanner,
+                            studentService,
+                            gradeService,
+                            reportService
+                    );
+                    break;
+
+                case 20:
 
                     System.out.println(
                             "Thank you for using Student Management System!"
@@ -182,7 +249,6 @@ public class Main {
     // STUDENT METHODS
     // =====================================================
 
-    // Add Student
     public static void addStudent(
             Scanner scanner,
             StudentService studentService) {
@@ -219,7 +285,6 @@ public class Main {
     }
 
 
-    // View Students
     public static void viewStudents(
             StudentService studentService) {
 
@@ -248,7 +313,6 @@ public class Main {
     }
 
 
-    // Search Student
     public static void searchStudent(
             Scanner scanner,
             StudentService studentService) {
@@ -279,7 +343,43 @@ public class Main {
     }
 
 
-    // Update Student
+    public static void searchStudentByName(
+            Scanner scanner,
+            StudentService studentService) {
+
+        System.out.print(
+                "Enter student name: "
+        );
+
+        String name = scanner.nextLine();
+
+        List<Student> students =
+                studentService.getStudentsByName(name);
+
+        if (students.isEmpty()) {
+
+            System.out.println(
+                    "No students found with that name."
+            );
+
+            return;
+        }
+
+        System.out.println(
+                "\n----- Search Results -----"
+        );
+
+        for (Student student : students) {
+
+            student.displayInfo();
+
+            System.out.println(
+                    "--------------------------"
+            );
+        }
+    }
+
+
     public static void updateStudent(
             Scanner scanner,
             StudentService studentService) {
@@ -349,7 +449,6 @@ public class Main {
     }
 
 
-    // Delete Student
     public static void deleteStudent(
             Scanner scanner,
             StudentService studentService) {
@@ -383,7 +482,6 @@ public class Main {
     // COURSE METHODS
     // =====================================================
 
-    // Add Course
     public static void addCourse(
             Scanner scanner,
             CourseService courseService) {
@@ -424,7 +522,6 @@ public class Main {
     }
 
 
-    // View Courses
     public static void viewCourses(
             CourseService courseService) {
 
@@ -453,7 +550,6 @@ public class Main {
     }
 
 
-    // Update Course
     public static void updateCourse(
             Scanner scanner,
             CourseService courseService) {
@@ -507,7 +603,6 @@ public class Main {
     }
 
 
-    // Delete Course
     public static void deleteCourse(
             Scanner scanner,
             CourseService courseService) {
@@ -541,7 +636,6 @@ public class Main {
     // ENROLLMENT METHODS
     // =====================================================
 
-    // Enroll Student
     public static void enrollStudent(
             Scanner scanner,
             EnrollmentService enrollmentService,
@@ -564,12 +658,10 @@ public class Main {
 
         try {
 
-            // Check student exists
             studentService.getStudentById(
                     studentId
             );
 
-            // Check course exists
             courseService.getCourseById(
                     courseId
             );
@@ -607,7 +699,6 @@ public class Main {
     }
 
 
-    // View Enrollments
     public static void viewEnrollments(
             EnrollmentService enrollmentService) {
 
@@ -652,7 +743,6 @@ public class Main {
     }
 
 
-    // Unenroll Student
     public static void unenrollStudent(
             Scanner scanner,
             EnrollmentService enrollmentService) {
@@ -679,5 +769,332 @@ public class Main {
         System.out.println(
                 "Student unenrolled successfully!"
         );
+    }
+
+
+    // =====================================================
+    // LIST STUDENTS BY COURSE
+    // =====================================================
+
+    public static void listStudentsByCourse(
+            Scanner scanner,
+            EnrollmentService enrollmentService,
+            StudentService studentService) {
+
+        System.out.print(
+                "Enter course ID: "
+        );
+
+        int courseId =
+                scanner.nextInt();
+
+        List<Enrollment> enrollments =
+                enrollmentService
+                        .getEnrollmentsByCourse(courseId);
+
+        if (enrollments.isEmpty()) {
+
+            System.out.println(
+                    "No students enrolled in this course."
+            );
+
+            return;
+        }
+
+        System.out.println(
+                "\n----- Students in Course "
+                        + courseId
+                        + " -----"
+        );
+
+        for (Enrollment enrollment :
+                enrollments) {
+
+            try {
+
+                Student student =
+                        studentService.getStudentById(
+                                enrollment.getStudentId()
+                        );
+
+                System.out.println(
+                        "Student ID: "
+                                + student.getId()
+                );
+
+                System.out.println(
+                        "Name: "
+                                + student.getName()
+                );
+
+                System.out.println(
+                        "Email: "
+                                + student.getEmail()
+                );
+
+                System.out.println(
+                        "-------------------------"
+                );
+
+            } catch (StudentNotFoundException e) {
+
+                System.out.println(
+                        e.getMessage()
+                );
+            }
+        }
+    }
+
+
+    // =====================================================
+    // GRADE METHODS
+    // =====================================================
+
+    public static void addGrade(
+            Scanner scanner,
+            GradeService gradeService,
+            StudentService studentService,
+            CourseService courseService) {
+
+        System.out.print(
+                "Enter grade ID: "
+        );
+
+        int id = scanner.nextInt();
+
+        System.out.print(
+                "Enter student ID: "
+        );
+
+        int studentId = scanner.nextInt();
+
+        System.out.print(
+                "Enter course ID: "
+        );
+
+        int courseId = scanner.nextInt();
+
+        System.out.print(
+                "Enter marks: "
+        );
+
+        double marks = scanner.nextDouble();
+
+        try {
+
+            studentService.getStudentById(
+                    studentId
+            );
+
+            courseService.getCourseById(
+                    courseId
+            );
+
+            Grade grade =
+                    new Grade(
+                            id,
+                            studentId,
+                            courseId,
+                            marks
+                    );
+
+            gradeService.addGrade(grade);
+
+            System.out.println(
+                    "Marks recorded successfully!"
+            );
+
+            System.out.println(
+                    "Grade: " + grade.getGrade()
+            );
+
+        } catch (
+                StudentNotFoundException |
+                CourseNotFoundException e) {
+
+            System.out.println(
+                    e.getMessage()
+            );
+        }
+    }
+
+
+    public static void viewStudentGrades(
+            Scanner scanner,
+            GradeService gradeService) {
+
+        System.out.print(
+                "Enter student ID: "
+        );
+
+        int studentId =
+                scanner.nextInt();
+
+        if (gradeService
+                .getGradesByStudent(studentId)
+                .isEmpty()) {
+
+            System.out.println(
+                    "No grades found for this student."
+            );
+
+            return;
+        }
+
+        System.out.println(
+                "\n----- Student Grades -----"
+        );
+
+        for (Grade grade :
+                gradeService
+                        .getGradesByStudent(studentId)) {
+
+            System.out.println(
+                    "Grade ID: " + grade.getId()
+            );
+
+            System.out.println(
+                    "Course ID: " + grade.getCourseId()
+            );
+
+            System.out.println(
+                    "Marks: " + grade.getMarks()
+            );
+
+            System.out.println(
+                    "Grade: " + grade.getGrade()
+            );
+
+            System.out.println(
+                    "--------------------------"
+            );
+        }
+    }
+
+
+    public static void updateGrade(
+            Scanner scanner,
+            GradeService gradeService) {
+
+        System.out.print(
+                "Enter grade ID to update: "
+        );
+
+        int id =
+                scanner.nextInt();
+
+        Grade existingGrade =
+                gradeService.getGradeById(id);
+
+        if (existingGrade == null) {
+
+            System.out.println(
+                    "Grade not found."
+            );
+
+            return;
+        }
+
+        System.out.print(
+                "Enter new marks: "
+        );
+
+        double marks =
+                scanner.nextDouble();
+
+        Grade updatedGrade =
+                new Grade(
+                        id,
+                        existingGrade.getStudentId(),
+                        existingGrade.getCourseId(),
+                        marks
+                );
+
+        gradeService.updateGrade(
+                updatedGrade
+        );
+
+        System.out.println(
+                "Marks updated successfully!"
+        );
+
+        System.out.println(
+                "New Grade: "
+                        + updatedGrade.getGrade()
+        );
+    }
+
+
+    public static void viewStudentAverage(
+            Scanner scanner,
+            GradeService gradeService) {
+
+        System.out.print(
+                "Enter student ID: "
+        );
+
+        int studentId =
+                scanner.nextInt();
+
+        double average =
+                gradeService.calculateAverage(
+                        studentId
+                );
+
+        if (average == 0) {
+
+            System.out.println(
+                    "No grades found for this student."
+            );
+
+            return;
+        }
+
+        System.out.println(
+                "Average Marks: " + average
+        );
+    }
+
+
+    // =====================================================
+    // STUDENT REPORT
+    // =====================================================
+
+    public static void viewStudentReport(
+            Scanner scanner,
+            StudentService studentService,
+            GradeService gradeService,
+            ReportService reportService) {
+
+        System.out.print(
+                "Enter student ID: "
+        );
+
+        int studentId =
+                scanner.nextInt();
+
+        try {
+
+            Student student =
+                    studentService.getStudentById(
+                            studentId
+                    );
+
+            List<Grade> grades =
+                    gradeService.getGradesByStudent(
+                            studentId
+                    );
+
+            reportService.printStudentReport(
+                    student,
+                    grades
+            );
+
+        } catch (StudentNotFoundException e) {
+
+            System.out.println(
+                    e.getMessage()
+            );
+        }
     }
 }
