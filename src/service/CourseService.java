@@ -1,6 +1,7 @@
 package service;
 
 import dao.CourseDAO;
+import exception.CourseNotFoundException;
 import model.Course;
 
 import java.util.List;
@@ -21,15 +22,33 @@ public class CourseService {
         return courseDAO.getAllCourses();
     }
 
-    public Course getCourseById(int id) {
-        return courseDAO.getCourseById(id);
+    public Course getCourseById(int id)
+            throws CourseNotFoundException {
+
+        Course course = courseDAO.getCourseById(id);
+
+        if (course == null) {
+            throw new CourseNotFoundException(
+                    "Course with ID " + id + " was not found."
+            );
+        }
+
+        return course;
     }
 
-    public void updateCourse(Course course) {
+    public void updateCourse(Course course)
+            throws CourseNotFoundException {
+
+        getCourseById(course.getId());
+
         courseDAO.updateCourse(course);
     }
 
-    public void deleteCourse(int id) {
+    public void deleteCourse(int id)
+            throws CourseNotFoundException {
+
+        getCourseById(id);
+
         courseDAO.deleteCourse(id);
     }
 }
