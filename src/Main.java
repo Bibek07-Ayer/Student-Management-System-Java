@@ -1,7 +1,12 @@
+import dao.CourseDAO;
+import dao.CourseDAOImpl;
 import dao.StudentDAO;
 import dao.StudentDAOImpl;
+import exception.CourseNotFoundException;
 import exception.StudentNotFoundException;
+import model.Course;
 import model.Student;
+import service.CourseService;
 import service.StudentService;
 
 import java.util.Scanner;
@@ -15,17 +20,28 @@ public class Main {
         StudentDAO studentDAO = new StudentDAOImpl();
         StudentService studentService = new StudentService(studentDAO);
 
+        CourseDAO courseDAO = new CourseDAOImpl();
+        CourseService courseService = new CourseService(courseDAO);
+
         while (true) {
 
             System.out.println("\n=================================");
             System.out.println("   STUDENT MANAGEMENT SYSTEM");
             System.out.println("=================================");
+
             System.out.println("1. Add Student");
             System.out.println("2. View All Students");
             System.out.println("3. Search Student");
             System.out.println("4. Update Student");
             System.out.println("5. Delete Student");
-            System.out.println("6. Exit");
+
+            System.out.println("6. Add Course");
+            System.out.println("7. View All Courses");
+            System.out.println("8. Update Course");
+            System.out.println("9. Delete Course");
+
+            System.out.println("10. Exit");
+
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -54,6 +70,22 @@ public class Main {
                     break;
 
                 case 6:
+                    addCourse(scanner, courseService);
+                    break;
+
+                case 7:
+                    viewCourses(courseService);
+                    break;
+
+                case 8:
+                    updateCourse(scanner, courseService);
+                    break;
+
+                case 9:
+                    deleteCourse(scanner, courseService);
+                    break;
+
+                case 10:
                     System.out.println(
                             "Thank you for using Student Management System!"
                     );
@@ -68,7 +100,8 @@ public class Main {
         }
     }
 
-    // Add Student
+    // ================= STUDENT =================
+
     public static void addStudent(
             Scanner scanner,
             StudentService studentService) {
@@ -102,7 +135,6 @@ public class Main {
         System.out.println("Student added successfully!");
     }
 
-    // View Students
     public static void viewStudents(
             StudentService studentService) {
 
@@ -122,7 +154,6 @@ public class Main {
         }
     }
 
-    // Search Student
     public static void searchStudent(
             Scanner scanner,
             StudentService studentService) {
@@ -144,7 +175,6 @@ public class Main {
         }
     }
 
-    // Update Student
     public static void updateStudent(
             Scanner scanner,
             StudentService studentService) {
@@ -155,7 +185,7 @@ public class Main {
 
         try {
 
-            Student student = studentService.getStudentById(id);
+            studentService.getStudentById(id);
 
             System.out.print("Enter new name: ");
             String name = scanner.nextLine();
@@ -189,7 +219,6 @@ public class Main {
         }
     }
 
-    // Delete Student
     public static void deleteStudent(
             Scanner scanner,
             StudentService studentService) {
@@ -208,6 +237,111 @@ public class Main {
             );
 
         } catch (StudentNotFoundException e) {
+
+            System.out.println(e.getMessage());
+        }
+    }
+
+    // ================= COURSE =================
+
+    public static void addCourse(
+            Scanner scanner,
+            CourseService courseService) {
+
+        System.out.print("Enter course ID: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Enter course code: ");
+        String courseCode = scanner.nextLine();
+
+        System.out.print("Enter course name: ");
+        String courseName = scanner.nextLine();
+
+        Course course = new Course(
+                id,
+                courseCode,
+                courseName
+        );
+
+        courseService.addCourse(course);
+
+        System.out.println("Course added successfully!");
+    }
+
+    public static void viewCourses(
+            CourseService courseService) {
+
+        if (courseService.getAllCourses().isEmpty()) {
+
+            System.out.println("No courses found.");
+            return;
+        }
+
+        System.out.println("\n----- All Courses -----");
+
+        for (Course course : courseService.getAllCourses()) {
+
+            course.displayCourse();
+
+            System.out.println("-----------------------");
+        }
+    }
+
+    public static void updateCourse(
+            Scanner scanner,
+            CourseService courseService) {
+
+        System.out.print("Enter course ID to update: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        try {
+
+            courseService.getCourseById(id);
+
+            System.out.print("Enter new course code: ");
+            String courseCode = scanner.nextLine();
+
+            System.out.print("Enter new course name: ");
+            String courseName = scanner.nextLine();
+
+            Course updatedCourse = new Course(
+                    id,
+                    courseCode,
+                    courseName
+            );
+
+            courseService.updateCourse(updatedCourse);
+
+            System.out.println(
+                    "Course updated successfully!"
+            );
+
+        } catch (CourseNotFoundException e) {
+
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void deleteCourse(
+            Scanner scanner,
+            CourseService courseService) {
+
+        System.out.print("Enter course ID to delete: ");
+        int id = scanner.nextInt();
+
+        try {
+
+            courseService.getCourseById(id);
+
+            courseService.deleteCourse(id);
+
+            System.out.println(
+                    "Course deleted successfully!"
+            );
+
+        } catch (CourseNotFoundException e) {
 
             System.out.println(e.getMessage());
         }
