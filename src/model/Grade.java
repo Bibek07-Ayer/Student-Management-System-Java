@@ -7,7 +7,12 @@ public class Grade {
     private int courseId;
     private double marks;
 
-    public Grade(int id, int studentId, int courseId, double marks) {
+    public Grade(
+            int id,
+            int studentId,
+            int courseId,
+            double marks) {
+
         this.id = id;
         this.studentId = studentId;
         this.courseId = courseId;

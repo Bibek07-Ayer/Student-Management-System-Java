@@ -1,32 +1,116 @@
 package dao;
 
+import exception.DatabaseException;
 import model.Student;
+import util.DBConnection;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StudentDAOImpl implements StudentDAO {
 
-    private List<Student> students = new ArrayList<>();
-
     @Override
     public void addStudent(Student student) {
-        students.add(student);
+
+        String sql = "INSERT INTO students " +
+                "(id, name, email, phone, address) " +
+                "VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(1, student.getId());
+            statement.setString(2, student.getName());
+            statement.setString(3, student.getEmail());
+            statement.setString(4, student.getPhone());
+            statement.setString(5, student.getAddress());
+
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+
+            throw new DatabaseException(
+                    "Could not add student.",
+                    e
+            );
+        }
     }
 
     @Override
     public List<Student> getAllStudents() {
+
+        List<Student> students = new ArrayList<>();
+
+        String sql = "SELECT id, name, email, phone, address " +
+                "FROM students";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+
+                Student student = new Student(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address")
+                );
+
+                students.add(student);
+            }
+
+        } catch (SQLException e) {
+
+            throw new DatabaseException(
+                    "Could not retrieve students.",
+                    e
+            );
+        }
+
         return students;
     }
 
     @Override
     public Student getStudentById(int id) {
 
-        for (Student student : students) {
+        String sql = "SELECT id, name, email, phone, address " +
+                "FROM students WHERE id = ?";
 
-            if (student.getId() == id) {
-                return student;
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+
+            try (ResultSet resultSet =
+                         statement.executeQuery()) {
+
+                if (resultSet.next()) {
+
+                    return new Student(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("phone"),
+                            resultSet.getString("address")
+                    );
+                }
             }
+
+        } catch (SQLException e) {
+
+            throw new DatabaseException(
+                    "Could not search for student.",
+                    e
+            );
         }
 
         return null;
@@ -35,43 +119,72 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public List<Student> getStudentsByName(String name) {
 
-        List<Student> result = new ArrayList<>();
+        List<Student> students = new ArrayList<>();
 
-        for (Student student : students) {
+        String sql = "SELECT id, name, email, phone, address " +
+                "FROM students WHERE LOWER(name) LIKE ?";
 
-            if (student.getName()
-                    .toLowerCase()
-                    .contains(name.toLowerCase())) {
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
 
-                result.add(student);
+            statement.setString(
+                    1,
+                    "%" + name.toLowerCase() + "%"
+            );
+
+            try (ResultSet resultSet =
+                         statement.executeQuery()) {
+
+                while (resultSet.next()) {
+
+                    Student student = new Student(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("phone"),
+                            resultSet.getString("address")
+                    );
+
+                    students.add(student);
+                }
             }
+
+        } catch (SQLException e) {
+
+            throw new DatabaseException(
+                    "Could not search students by name.",
+                    e
+            );
         }
 
-        return result;
+        return students;
     }
 
     @Override
     public void updateStudent(Student student) {
 
-        Student existingStudent =
-                getStudentById(student.getId());
+        String sql = "UPDATE students " +
+                "SET name = ?, email = ?, phone = ?, address = ? " +
+                "WHERE id = ?";
 
-        if (existingStudent != null) {
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
 
-            existingStudent.setName(
-                    student.getName()
-            );
+            statement.setString(1, student.getName());
+            statement.setString(2, student.getEmail());
+            statement.setString(3, student.getPhone());
+            statement.setString(4, student.getAddress());
+            statement.setInt(5, student.getId());
 
-            existingStudent.setEmail(
-                    student.getEmail()
-            );
+            statement.executeUpdate();
 
-            existingStudent.setPhone(
-                    student.getPhone()
-            );
+        } catch (SQLException e) {
 
-            existingStudent.setAddress(
-                    student.getAddress()
+            throw new DatabaseException(
+                    "Could not update student.",
+                    e
             );
         }
     }
@@ -79,11 +192,22 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public void deleteStudent(int id) {
 
-        Student student =
-                getStudentById(id);
+        String sql = "DELETE FROM students WHERE id = ?";
 
-        if (student != null) {
-            students.remove(student);
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+
+            throw new DatabaseException(
+                    "Could not delete student.",
+                    e
+            );
         }
     }
 }

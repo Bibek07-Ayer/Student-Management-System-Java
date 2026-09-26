@@ -55,7 +55,8 @@ public class Main {
 
         while (true) {
 
-            System.out.println("\n=================================");
+            System.out.println();
+            System.out.println("=================================");
             System.out.println("   STUDENT MANAGEMENT SYSTEM");
             System.out.println("=================================");
 
@@ -82,8 +83,9 @@ public class Main {
             System.out.println("18. View Student Average");
 
             System.out.println("19. View Student Report");
+            System.out.println("20. View Class Ranking");
 
-            System.out.println("20. Exit");
+            System.out.println("21. Exit");
 
             System.out.print("Enter your choice: ");
 
@@ -227,6 +229,15 @@ public class Main {
 
                 case 20:
 
+                    reportService.printClassRanking(
+                            studentService.getAllStudents(),
+                            gradeService.getAllGrades()
+                    );
+
+                    break;
+
+                case 21:
+
                     System.out.println(
                             "Thank you for using Student Management System!"
                     );
@@ -243,7 +254,6 @@ public class Main {
             }
         }
     }
-
 
     // =====================================================
     // STUDENT METHODS
@@ -284,11 +294,13 @@ public class Main {
         );
     }
 
-
     public static void viewStudents(
             StudentService studentService) {
 
-        if (studentService.getAllStudents().isEmpty()) {
+        List<Student> students =
+                studentService.getAllStudents();
+
+        if (students.isEmpty()) {
 
             System.out.println(
                     "No students found."
@@ -301,8 +313,7 @@ public class Main {
                 "\n----- All Students -----"
         );
 
-        for (Student student :
-                studentService.getAllStudents()) {
+        for (Student student : students) {
 
             student.displayInfo();
 
@@ -311,7 +322,6 @@ public class Main {
             );
         }
     }
-
 
     public static void searchStudent(
             Scanner scanner,
@@ -341,7 +351,6 @@ public class Main {
             );
         }
     }
-
 
     public static void searchStudentByName(
             Scanner scanner,
@@ -378,7 +387,6 @@ public class Main {
             );
         }
     }
-
 
     public static void updateStudent(
             Scanner scanner,
@@ -448,7 +456,6 @@ public class Main {
         }
     }
 
-
     public static void deleteStudent(
             Scanner scanner,
             StudentService studentService) {
@@ -476,7 +483,6 @@ public class Main {
             );
         }
     }
-
 
     // =====================================================
     // COURSE METHODS
@@ -521,11 +527,13 @@ public class Main {
         );
     }
 
-
     public static void viewCourses(
             CourseService courseService) {
 
-        if (courseService.getAllCourses().isEmpty()) {
+        List<Course> courses =
+                courseService.getAllCourses();
+
+        if (courses.isEmpty()) {
 
             System.out.println(
                     "No courses found."
@@ -538,8 +546,7 @@ public class Main {
                 "\n----- All Courses -----"
         );
 
-        for (Course course :
-                courseService.getAllCourses()) {
+        for (Course course : courses) {
 
             course.displayCourse();
 
@@ -548,7 +555,6 @@ public class Main {
             );
         }
     }
-
 
     public static void updateCourse(
             Scanner scanner,
@@ -602,7 +608,6 @@ public class Main {
         }
     }
 
-
     public static void deleteCourse(
             Scanner scanner,
             CourseService courseService) {
@@ -630,7 +635,6 @@ public class Main {
             );
         }
     }
-
 
     // =====================================================
     // ENROLLMENT METHODS
@@ -698,13 +702,13 @@ public class Main {
         }
     }
 
-
     public static void viewEnrollments(
             EnrollmentService enrollmentService) {
 
-        if (enrollmentService
-                .getAllEnrollments()
-                .isEmpty()) {
+        List<Enrollment> enrollments =
+                enrollmentService.getAllEnrollments();
+
+        if (enrollments.isEmpty()) {
 
             System.out.println(
                     "No enrollments found."
@@ -718,8 +722,7 @@ public class Main {
         );
 
         for (Enrollment enrollment :
-                enrollmentService
-                        .getAllEnrollments()) {
+                enrollments) {
 
             System.out.println(
                     "Enrollment ID: "
@@ -741,7 +744,6 @@ public class Main {
             );
         }
     }
-
 
     public static void unenrollStudent(
             Scanner scanner,
@@ -770,7 +772,6 @@ public class Main {
                 "Student unenrolled successfully!"
         );
     }
-
 
     // =====================================================
     // LIST STUDENTS BY COURSE
@@ -845,7 +846,6 @@ public class Main {
         }
     }
 
-
     // =====================================================
     // GRADE METHODS
     // =====================================================
@@ -918,7 +918,6 @@ public class Main {
         }
     }
 
-
     public static void viewStudentGrades(
             Scanner scanner,
             GradeService gradeService) {
@@ -930,9 +929,12 @@ public class Main {
         int studentId =
                 scanner.nextInt();
 
-        if (gradeService
-                .getGradesByStudent(studentId)
-                .isEmpty()) {
+        List<Grade> grades =
+                gradeService.getGradesByStudent(
+                        studentId
+                );
+
+        if (grades.isEmpty()) {
 
             System.out.println(
                     "No grades found for this student."
@@ -945,9 +947,7 @@ public class Main {
                 "\n----- Student Grades -----"
         );
 
-        for (Grade grade :
-                gradeService
-                        .getGradesByStudent(studentId)) {
+        for (Grade grade : grades) {
 
             System.out.println(
                     "Grade ID: " + grade.getId()
@@ -970,7 +970,6 @@ public class Main {
             );
         }
     }
-
 
     public static void updateGrade(
             Scanner scanner,
@@ -1024,7 +1023,6 @@ public class Main {
         );
     }
 
-
     public static void viewStudentAverage(
             Scanner scanner,
             GradeService gradeService) {
@@ -1054,7 +1052,6 @@ public class Main {
                 "Average Marks: " + average
         );
     }
-
 
     // =====================================================
     // STUDENT REPORT

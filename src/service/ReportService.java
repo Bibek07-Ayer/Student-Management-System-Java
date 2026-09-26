@@ -3,7 +3,10 @@ package service;
 import model.Grade;
 import model.Student;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ReportService {
 
@@ -63,7 +66,6 @@ public class ReportService {
         System.out.println("=================================");
     }
 
-
     public void printClassRanking(
             List<Student> students,
             List<Grade> grades) {
@@ -80,30 +82,14 @@ public class ReportService {
             return;
         }
 
-        List<Student> rankedStudents =
-                new java.util.ArrayList<>(students);
+        /*
+         * Map stores:
+         * Student ID -> Average Marks
+         */
+        Map<Integer, Double> averages =
+                new HashMap<>();
 
-        rankedStudents.sort((student1, student2) -> {
-
-            double average1 = calculateAverage(
-                    student1.getId(),
-                    grades
-            );
-
-            double average2 = calculateAverage(
-                    student2.getId(),
-                    grades
-            );
-
-            return Double.compare(
-                    average2,
-                    average1
-            );
-        });
-
-        int rank = 1;
-
-        for (Student student : rankedStudents) {
+        for (Student student : students) {
 
             double average =
                     calculateAverage(
@@ -111,8 +97,55 @@ public class ReportService {
                             grades
                     );
 
+            averages.put(
+                    student.getId(),
+                    average
+            );
+        }
+
+        /*
+         * Create a list for sorting
+         */
+        List<Student> rankedStudents =
+                new ArrayList<>(students);
+
+        /*
+         * Sort students by average marks
+         * from highest to lowest
+         */
+        rankedStudents.sort(
+                (student1, student2) -> {
+
+                    double average1 =
+                            averages.get(
+                                    student1.getId()
+                            );
+
+                    double average2 =
+                            averages.get(
+                                    student2.getId()
+                            );
+
+                    return Double.compare(
+                            average2,
+                            average1
+                    );
+                }
+        );
+
+        int rank = 1;
+
+        for (Student student :
+                rankedStudents) {
+
+            double average =
+                    averages.get(
+                            student.getId()
+                    );
+
             System.out.println(
-                    rank + ". "
+                    rank
+                            + ". "
                             + student.getName()
                             + " - Average: "
                             + average
@@ -121,9 +154,10 @@ public class ReportService {
             rank++;
         }
 
-        System.out.println("=================================");
+        System.out.println(
+                "================================="
+        );
     }
-
 
     private double calculateAverage(
             int studentId,
@@ -137,11 +171,13 @@ public class ReportService {
             if (grade.getStudentId() == studentId) {
 
                 total += grade.getMarks();
+
                 count++;
             }
         }
 
         if (count == 0) {
+
             return 0;
         }
 
